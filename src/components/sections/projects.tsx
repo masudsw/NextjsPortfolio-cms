@@ -1,6 +1,7 @@
 import React from 'react';
 
 const Projects = () => {
+    
     return (
         <div>
             project component

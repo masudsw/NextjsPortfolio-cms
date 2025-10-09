@@ -1,0 +1,8 @@
+{
+    "projects":[
+    {"id":1, "title":"portfolio site", "status":"in progress"},
+    {"id":2, "title":"offline crud demo site", "status":"Completed"}
+    ],
+    "users":[]
+    
+}

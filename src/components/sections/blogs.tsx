@@ -1,9 +1,15 @@
 import React from 'react';
 
-const Blogs = () => {
+const Blogs = async() => {
+    const data=await fetch(`process.env.DATABASE_URL/projects`)
+    const project=await data.json()
     return (
         <div>
-            <h1>Blog page</h1>
+            {
+                project.map((pro:any)=>{
+                    <li>{pro.title}</li>
+                })
+            }
         </div>
     );
 };
