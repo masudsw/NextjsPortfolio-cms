@@ -18,10 +18,35 @@ const LoginForm = () => {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormInputs>();
 
-  const onSubmit = (data: LoginFormInputs) => {
-    console.log("Login data:", data);
-    // TODO: Replace with your actual login logic (e.g., API call)
-  };
+  const onSubmit = async(data: LoginFormInputs) => {
+    const apiUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    if (!apiUrl) {
+        console.error("BASE_URL environment variable is not set.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${apiUrl}/auth/login`, {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data), 
+        });
+        console.log(response)
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Login failed with status:", response.status, errorData);
+            return;
+        }
+        const result = await response.json();
+        console.log("Login successful! Token/User data:", result);
+        
+
+    } catch (error) {
+        console.error("Network or Fetch Error:", error);
+    }
+};
 
   return (
     <Card className="w-full max-w-sm">
@@ -61,7 +86,7 @@ const LoginForm = () => {
               {...register("password", {
                 required: "Password is required",
                 minLength: {
-                  value: 6,
+                  value: 5,
                   message: "Password must be at least 6 characters",
                 },
               })}
