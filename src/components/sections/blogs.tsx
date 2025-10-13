@@ -6,6 +6,7 @@ const Blogs = async() => {
     return (
         <div>
             {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 project.map((pro:any)=>{
                     <li>{pro.title}</li>
                 })

@@ -10,16 +10,27 @@ const protectedRoutes = [
     '/dashboard/projects',  
 ];
 
-export function middleware(request: NextRequest) {    
+
+export function middleware(request: NextRequest) { 
+    const currentPath = request.nextUrl.pathname;   
     const hasAuthCookie = request.cookies.has(AUTH_COOKIE_NAME);
     const isProtectedRoute = protectedRoutes.some(route => 
         request.nextUrl.pathname.startsWith(route)
     );
+    console.log('--- MIDDLEWARE CHECK ---');
+    console.log(`Path: ${currentPath}`);
+    console.log(`Protected: ${isProtectedRoute}`);
+    console.log(`Cookie Present: ${hasAuthCookie}`);
+    console.log(`Full Cookie Map:`, request.cookies.getAll()); // 💡 Show all cookies for inspection
  
     if (isProtectedRoute && !hasAuthCookie) {
         const loginUrl = new URL('/login', request.url);
         loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
         return NextResponse.redirect(loginUrl);
+    }
+
+    if (isProtectedRoute && hasAuthCookie) {
+        console.log(`ACCESS GRANTED: User accessing protected route ${currentPath}`);
     }
     return NextResponse.next();
 }
