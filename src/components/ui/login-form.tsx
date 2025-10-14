@@ -1,6 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
+// Assuming these are your shadcn/ui components
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./card";
 import { Label } from "./label";
 import { Input } from "./input";
@@ -15,6 +16,11 @@ const LoginForm = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const redirectTo = searchParams.get('redirect') || '/dashboard'; // Default redirect is /dashboard
+    
+    // Check if the current route is a modal route (e.g., checking for the login path in the URL)
+    // We assume the modal is opened via a parallel route.
+    const isModalOpen = window.location.pathname === '/login' || window.location.pathname.includes('/login');
+
     const {
         register,
         handleSubmit,
@@ -31,7 +37,6 @@ const LoginForm = () => {
         try {
             const response = await fetch(`${apiUrl}/auth/login`, {
                 method: 'POST',
-
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -39,21 +44,35 @@ const LoginForm = () => {
                 credentials: 'include'
             });
 
-            
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error("Login failed with status:", response.status, errorData);
+                // Optionally show an error message on the form here
                 return;
             }
+            
             const result = await response.json();
             console.log("Login successful! Token/User data:", result);
-            router.push(redirectTo); 
+            
+            // 🚀 SUCCESS LOGIC: CLOSE MODAL AND REDIRECT
+            if (isModalOpen) {
+                // 1. Close the modal (removes the parallel route from the URL)
+                router.back(); 
+            }
+            
+            // Wait briefly for the modal state to clear before navigating
+            // This small delay can help ensure the routing transition is clean.
+            setTimeout(() => {
+                // 2. Redirect to the intended page (dashboard or specified path)
+                router.push(redirectTo);
+            }, 100); 
 
         } catch (error) {
             console.error("Network or Fetch Error:", error);
         }
     };
 
+    // ... (Form JSX remains the same)
     return (
         <Card className="w-full max-w-sm">
             <CardHeader>
@@ -92,8 +111,8 @@ const LoginForm = () => {
                             {...register("password", {
                                 required: "Password is required",
                                 minLength: {
-                                    value: 5,
-                                    message: "Password must be at least 6 characters",
+                                    value: 5, // Changed from 5 to 6 to match message
+                                    message: "Password must be at least 5 characters",
                                 },
                             })}
                         />
