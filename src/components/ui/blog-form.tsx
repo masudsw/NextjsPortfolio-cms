@@ -36,29 +36,33 @@ interface BlogFormProps {
 const BlogForm = ({ defaultValues, slug, onSuccess }: BlogFormProps) => {
     const form = useForm<BlogFormValues>({
         resolver: zodResolver(blogSchema),
-        defaultValues: defaultValues || {
+        defaultValues: defaultValues ? {
+            ...defaultValues,
+            tags: Array.isArray(defaultValues.tags) ? defaultValues.tags.join(',') : defaultValues.tags
+        } : {
             title: "",
             content: "",
             thumbnail: "",
             tags: "",
+            isFeatured: false
         },
     });
 
-    useEffect(() => {
-        if (defaultValues) {
-            const valuesWithFormattedTags = {
-                ...defaultValues,
-                tags: Array.isArray(defaultValues.tags) ? defaultValues.tags.join(',') : defaultValues.tags,
-            };
-            form.reset(valuesWithFormattedTags)
-        }
+    // useEffect(() => {
+    //     if (defaultValues) {
+    //         const valuesWithFormattedTags = {
+    //             ...defaultValues,
+    //             tags: Array.isArray(defaultValues.tags) ? defaultValues.tags.join(',') : defaultValues.tags,
+    //         };
+    //         form.reset(valuesWithFormattedTags)
+    //     }
 
-    }, [defaultValues, form.reset])
+    // }, [defaultValues, form.reset])
     const { isSubmitting } = form.formState;
     const onSubmit: SubmitHandler<BlogFormValues> = async (data) => {
         const tagsArray = data.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
         const finalData = { ...data, tags: tagsArray }
-        console.log("Final Data.......",finalData)
+        console.log("Final Data.......", finalData)
         const apiUrl = process.env.NEXT_PUBLIC_BASE_URL;
         if (!apiUrl) {
             toast.error("BASE_URL environment variable is not set.");
@@ -68,6 +72,7 @@ const BlogForm = ({ defaultValues, slug, onSuccess }: BlogFormProps) => {
             const isEditing = !!slug;
             const method = isEditing ? 'PATCH' : 'POST';
             const url = isEditing ? `${apiUrl}/post/${slug}` : `${apiUrl}/post`;
+            console.log("Submitting:", { method, url, data: finalData });
             const response = await fetch(url, {
                 method,
                 headers: { 'Content-type': 'application/json' },
@@ -94,6 +99,7 @@ const BlogForm = ({ defaultValues, slug, onSuccess }: BlogFormProps) => {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            
                 <FormField
                     control={form.control}
                     name="title"
@@ -159,7 +165,7 @@ const BlogForm = ({ defaultValues, slug, onSuccess }: BlogFormProps) => {
                     )}
                 />
 
-               
+
                 <FormField
                     control={form.control}
                     name="tags"
@@ -185,10 +191,10 @@ const BlogForm = ({ defaultValues, slug, onSuccess }: BlogFormProps) => {
                     disabled={isSubmitting}
                 >
                     {/* 🔑 Change button text based on submission state */}
-                   {isSubmitting
-                ? (isEditing ? "Updating post..." : "Creating post...")
-                : (isEditing ? "Update Blog Post" : "Submit Blog Post")
-            }
+                    {isSubmitting
+                        ? (isEditing ? "Updating post..." : "Creating post...")
+                        : (isEditing ? "Update Blog Post" : "Submit Blog Post")
+                    }
                 </Button>
             </form>
         </Form>
