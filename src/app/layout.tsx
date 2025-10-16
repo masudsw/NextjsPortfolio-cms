@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import React from "react";
 import { Toaster } from "@/components/ui/sonner"
+import { warning } from "framer-motion";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +39,14 @@ export default function RootLayout({
         </div>
         {modal}
         {children}
-        <Toaster />
+        <Toaster position="top-right" 
+        // richColors
+        // toastOptions={{
+        //   classNames:{
+        //     warning:'text-black'
+        //   }
+        // }}
+        />
       </body>
     </html>
   );

@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, FileText, FolderOpen, PlusCircle, Pencil, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation"; // Import the router for redirection
+import { toast } from "sonner";
 
 // --- 1. Define the Nav Items (unchanged) ---
 // Define the type for a Nav Item for type safety
@@ -77,8 +78,8 @@ export function DashboardSidebar() {
 
             if (response.ok) {
                 // If the server successfully clears the cookie, redirect the user
-                console.log("Logout successful");
-                router.push('/login'); 
+                toast.success("Logout successful");
+                router.push('/'); 
             } else {
                 // Handle cases where the server fails to process logout (e.g., 500 error)
                 console.error("Server failed to log out:", response.status);
