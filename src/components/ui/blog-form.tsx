@@ -1,6 +1,6 @@
 "use client"
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -16,6 +16,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import {  useRouter } from 'next/navigation';
 
 const blogSchema = z.object({
     title: z.string().min(3, "Title is required"),
@@ -47,6 +48,7 @@ const BlogForm = ({ defaultValues, slug, onSuccess }: BlogFormProps) => {
             isFeatured: false
         },
     });
+    const router=useRouter();
 
     // useEffect(() => {
     //     if (defaultValues) {
@@ -87,6 +89,7 @@ const BlogForm = ({ defaultValues, slug, onSuccess }: BlogFormProps) => {
             }
             toast.success(`Blog post ${isEditing ? 'updated' : 'created'} successfully`);
             form.reset();
+            router.push('/dashboard/blog/manage'); 
             onSuccess?.()
 
         } catch (error) {

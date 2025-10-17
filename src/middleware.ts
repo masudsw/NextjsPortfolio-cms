@@ -7,7 +7,7 @@ console.log(AUTH_COOKIE_NAME)
 const protectedRoutes = [
     '/dashboard',
     '/dashboard/blog',
-    '/dashboard/projects',  
+    '/dashboard/project',  
 ];
 
 
@@ -23,18 +23,18 @@ export function middleware(request: NextRequest) {
     console.log(`Cookie Present: ${hasAuthCookie}`);
     console.log(`Full Cookie Map:`, request.cookies.getAll()); // 💡 Show all cookies for inspection
  
-    // if (isProtectedRoute && !hasAuthCookie) {
-    //     const loginUrl = new URL('/login', request.url);
-    //     loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
-    //     return NextResponse.redirect(loginUrl);
-    // }
+    if (isProtectedRoute && !hasAuthCookie) {
+        const loginUrl = new URL('/login', request.url);
+        loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
+        return NextResponse.redirect(loginUrl);
+    }
 
-    // if (isProtectedRoute && hasAuthCookie) {
-    //     console.log(`ACCESS GRANTED: User accessing protected route ${currentPath}`);
-    // }
-    // return NextResponse.next();
+    if (isProtectedRoute && hasAuthCookie) {
+        console.log(`ACCESS GRANTED: User accessing protected route ${currentPath}`);
+    }
+    return NextResponse.next();
 }
 
-// export const config = {
-//     matcher: ['/((?!api|_next/static|_next/image|favicon.ico|login).*)'],
-// };
+export const config = {
+    matcher: ['/((?!api|_next/static|_next/image|favicon.ico|login).*)'],
+};

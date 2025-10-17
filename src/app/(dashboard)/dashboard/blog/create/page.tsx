@@ -1,3 +1,4 @@
+"use client"
 import BlogForm from '@/components/ui/blog-form';
 import React from 'react';
 

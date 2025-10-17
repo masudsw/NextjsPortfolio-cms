@@ -1,3 +1,4 @@
+
 import BlogForm, { BlogFormValues } from '@/components/ui/blog-form';
 
 interface FetchedPost extends Omit<BlogFormValues, 'tags'> {
@@ -33,8 +34,8 @@ const fetchPostData = async (slug: string): Promise<FetchedPost> => {
 };
 
 const EditBlog = async ({ params }: EditBlogProps) => {
-    const slug = params.slug;
-    const defaultData = await fetchPostData(slug);
+    const {slug} = await params;
+   const defaultData = await fetchPostData(slug);
      
     if (!defaultData) {
         return (

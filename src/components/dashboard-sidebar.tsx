@@ -45,12 +45,12 @@ const navItems: NavItem[] = [
     },
     {
         title: "Create New Project",
-        href: "/dashboard/projects/create",
+        href: "/dashboard/project/create",
         icon: PlusCircle,
     },
     {
         title: "Manage Projects (Edit/Delete)",
-        href: "/dashboard/projects/manage",
+        href: "/dashboard/project/manage",
         icon: Pencil,
     },
 ];
