@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-[400rem]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
         <div className="bg-amber-700">
           <Navbar />
