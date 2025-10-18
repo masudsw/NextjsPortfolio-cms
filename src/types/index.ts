@@ -1,3 +1,12 @@
+
+export interface BlogPost{
+    title:string;
+    slug?:string;
+    content:string;
+    thumbnail:string;
+    isFeatured:boolean;
+    tags:string[]
+}
 export interface Project {
     name: string;
     slug: string;        // Used for routing: /projects/[slug]

@@ -21,6 +21,11 @@ export function Navbar() {
       link: "/#projects-section",
       icon: <User className="h-4 w-4 text-neutral-500 dark:text-white" />,
     },
+    {
+      name: "My Blogs",
+      link: "/#blogs",
+      icon: <User className="h-4 w-4 text-neutral-500 dark:text-white" />,
+    },
     
     
   ];
