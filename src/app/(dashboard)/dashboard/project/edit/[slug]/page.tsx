@@ -69,14 +69,9 @@ const EditProjectPage = async ({ params }: EditProjectProps) => {
     return (
         <div className='max-w-2xl mx-auto p-6 bg-white shadow-md rounded-2xl my-8'>
             <h1 className='text-2xl font-semibold mb-6 text-center'>Edit Project: {defaultData.name}</h1>
-            
             <ProjectForm 
-                // Pass the formatted initial values
                 defaultValues={formInitialValues} 
-                // Pass the ID to trigger the PATCH logic in the form
-                slug={defaultData.slug} 
-                // Redirect back to manage page on successful update
-                
+                slug={defaultData.slug}   
             />
         </div>
     );
