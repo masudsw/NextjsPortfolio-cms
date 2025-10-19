@@ -2,13 +2,27 @@
 export interface ApiResponse<T> {
     data: T[]; 
 }
+
+// Define the structure of the Author object
+interface Author {
+    id: number;
+    name: string; 
+    email: string;
+   
+}
+
 export interface BlogPost{
     title:string;
     slug?:string;
     content:string;
     thumbnail:string;
     isFeatured:boolean;
-    tags:string[]
+    tags:string[];
+    views: number; 
+    authorId: number;
+    createdAt: string;
+    updatedAt: string;
+    author: Author; 
 }
 export interface Project {
     name: string;
