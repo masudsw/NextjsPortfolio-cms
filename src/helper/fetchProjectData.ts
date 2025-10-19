@@ -9,7 +9,6 @@ export default async function fetchAllProjects(): Promise<ApiProject[]> {
         const response = await fetch(`${apiUrl}/project`, { cache: 'no-store' });
         if (!response.ok) throw new Error("Failed to fetch projects");
         const data = await response.json();
-        console.log("fetch all projects", data)
         return (data.data || data) as ApiProject[]; // Adjust for your API response structure
     } catch (error) {
         console.error("Project Fetch Error:", error);

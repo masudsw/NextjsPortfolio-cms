@@ -1,7 +1,8 @@
-import { BlogPost, Project } from '@/types';
+import { ApiResponse, BlogPost, Project } from '@/types';
 import { notFound } from 'next/navigation';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
 
 if (!BASE_URL) {
     throw new Error("NEXT_PUBLIC_BASE_URL environment variable is not set.");
@@ -58,7 +59,7 @@ export const blogService = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
     }),
-    getLatestPosts: () => apiFetch<BlogPost[]>('post?limit=3'),
+    getLatestPosts: () => apiFetch<ApiResponse<BlogPost>>('post?limit=3'),
     getPostBySlug:(slug:string)=>apiFetch<BlogPost>(`post/${slug}`),
     getAllPosts:()=>apiFetch<BlogPost[]>('post')
 };
