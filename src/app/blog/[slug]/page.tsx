@@ -24,10 +24,10 @@ interface BlogPostDetailPageProps {
 export default async function BlogPostDetailPage({ params }: BlogPostDetailPageProps) {
     const { slug } =await params;
     const post = await getBlogDetailData(slug); 
-    const createdDate = new Date(post.createdAt).toLocaleDateString('en-US', { 
+    const createdDate = new Date(post.createdAt!).toLocaleDateString('en-US', { 
         year: 'numeric', month: 'long', day: 'numeric' 
     });
-    const updatedDate = new Date(post.updatedAt).toLocaleDateString('en-US', { 
+    const updatedDate = new Date(post.updatedAt!).toLocaleDateString('en-US', { 
         year: 'numeric', month: 'long', day: 'numeric' 
     });
 
@@ -53,8 +53,8 @@ export default async function BlogPostDetailPage({ params }: BlogPostDetailPageP
                 {post.title}
             </h1>
             <div className="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 mb-8 space-x-4">
-                <span>By: <span className="font-semibold text-indigo-600 dark:text-indigo-400">{post.author.name}</span></span>
-                <span>• Views: {post.views.toLocaleString()}</span>                 
+                <span>By: <span className="font-semibold text-indigo-600 dark:text-indigo-400">{post?.author?.name}</span></span>
+                <span>• Views: {post.views? post.views.toLocaleString():0}</span>                 
                 <span>• Published: {createdDate}</span>
                 {post.createdAt !== post.updatedAt && (
                     <span>• Updated: {updatedDate}</span>

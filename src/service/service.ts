@@ -15,6 +15,7 @@ async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise
     try {
         const response = await fetch(url, {
             cache: 'no-store', 
+            credentials: 'include',
             ...options,
         });
 
@@ -55,7 +56,7 @@ export const blogService = {
         body: JSON.stringify(data),
     }),
     updatePost: (postId: string, data: Partial<BlogPost>) => apiFetch<BlogPost>(`post/${postId}`, {
-        method: 'PUT', // or 'PATCH'
+        method: 'PATCH', 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
     }),

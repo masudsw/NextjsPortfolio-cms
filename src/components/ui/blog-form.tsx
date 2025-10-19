@@ -16,7 +16,8 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import {  useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { blogService } from '@/service/service';
 
 const blogSchema = z.object({
     title: z.string().min(3, "Title is required"),
@@ -48,61 +49,35 @@ const BlogForm = ({ defaultValues, slug, onSuccess }: BlogFormProps) => {
             isFeatured: false
         },
     });
-    const router=useRouter();
+    const router = useRouter();
 
-    // useEffect(() => {
-    //     if (defaultValues) {
-    //         const valuesWithFormattedTags = {
-    //             ...defaultValues,
-    //             tags: Array.isArray(defaultValues.tags) ? defaultValues.tags.join(',') : defaultValues.tags,
-    //         };
-    //         form.reset(valuesWithFormattedTags)
-    //     }
-
-    // }, [defaultValues, form.reset])
     const { isSubmitting } = form.formState;
     const onSubmit: SubmitHandler<BlogFormValues> = async (data) => {
         const tagsArray = data.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
         const finalData = { ...data, tags: tagsArray }
-        console.log("Final Data.......", finalData)
-        const apiUrl = process.env.NEXT_PUBLIC_BASE_URL;
-        if (!apiUrl) {
-            toast.error("BASE_URL environment variable is not set.");
-            return;
-        }
+
         try {
-            const isEditing = !!slug;
-            const method = isEditing ? 'PATCH' : 'POST';
-            const url = isEditing ? `${apiUrl}/post/${slug}` : `${apiUrl}/post`;
-            console.log("Submitting:", { method, url, data: finalData });
-            const response = await fetch(url, {
-                method,
-                headers: { 'Content-type': 'application/json' },
-                body: JSON.stringify(finalData),
-                credentials: 'include',
-                cache: "no-store"
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                toast.error(`Operation failed: ${response.status}, ${errorData.message}`);
-                return;
+            if (isEditing) {
+                await blogService.updatePost(slug as string, finalData);
             }
-            toast.success(`Blog post ${isEditing ? 'updated' : 'created'} successfully`);
+            else {
+                await blogService.createPost(finalData);
+            }
+            toast.success(`Blog post ${isEditing ? 'updated' : 'created'} successfully!`);
             form.reset();
-            router.push('/dashboard/blog/manage'); 
-            onSuccess?.()
+            router.push('/dashboard/blog/manage');
+            onSuccess?.();
 
         } catch (error) {
-            toast.error(`Network or fetch error : ${error}`)
-
+            console.error('Blog Submission Error:', error);
+            const errorMessage = (error as Error).message || "An unexpected error occurred.";
+            toast.error(`Operation failed: ${errorMessage}`);
         }
-
     }
     const isEditing = !!slug;
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            
                 <FormField
                     control={form.control}
                     name="title"

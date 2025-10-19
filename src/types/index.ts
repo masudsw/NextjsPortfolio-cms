@@ -18,15 +18,15 @@ export interface BlogPost{
     thumbnail:string;
     isFeatured:boolean;
     tags:string[];
-    views: number; 
-    authorId: number;
-    createdAt: string;
-    updatedAt: string;
-    author: Author; 
+    views?: number; 
+    authorId?: number;
+    createdAt?: string;
+    updatedAt?: string;
+    author?: Author; 
 }
 export interface Project {
     name: string;
-    slug: string;        // Used for routing: /projects/[slug]
+    slug?: string;        // Used for routing: /projects/[slug]
     description: string;
     features: string[];
     thumbnail: string;   // Used for the image source

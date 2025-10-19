@@ -17,7 +17,8 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import {  useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { projectService } from '@/service/service';
 // ---------------------------
 // 🎯 ZOD SCHEMA DEFINITION
 // ---------------------------
@@ -26,11 +27,11 @@ const projectSchema = z.object({
     description: z.string().min(20, "Description must be at least 20 characters."),
     // Features will be a comma-separated string in the form, like your tags
     features: z.string().min(3, "Features are required (comma-separated)."),
-    
+
     projectlink: z.string()
         .url("Must be a valid URL for the repository.")
         .or(z.literal("")), // Allows empty string for optional field
-    
+
     livesite: z.string()
         .url("Must be a valid URL for the live site.")
         .or(z.literal("")), // Allows empty string for optional field
@@ -45,12 +46,12 @@ export type ProjectFormValues = z.infer<typeof projectSchema>;
 interface ProjectFormProps {
     defaultValues?: ProjectFormValues;
     // We'll use a unique identifier (like a slug or ID) for updates
-    slug?: string | number; 
+    slug?: string;
     onSuccess?: () => void
 }
 
 const ProjectForm = ({ defaultValues, slug, onSuccess }: ProjectFormProps) => {
-    
+
     const form = useForm<ProjectFormValues>({
         resolver: zodResolver(projectSchema),
         // Initialize form: use defaultValues for edit, or fallbacks for create
@@ -67,7 +68,7 @@ const ProjectForm = ({ defaultValues, slug, onSuccess }: ProjectFormProps) => {
             thumbnail: "",
         },
     });
-    const router=useRouter();
+    const router = useRouter();
 
     const { isSubmitting } = form.formState;
 
@@ -76,37 +77,20 @@ const ProjectForm = ({ defaultValues, slug, onSuccess }: ProjectFormProps) => {
         const featuresArray = data.features.split(',').map(f => f.trim()).filter(f => f.length > 0)
         const finalData = { ...data, features: featuresArray }
 
-        const apiUrl = process.env.NEXT_PUBLIC_BASE_URL;
-        if (!apiUrl) {
-            toast.error("BASE_URL environment variable is not set.");
-            return;
-        }
+
 
         try {
-            const isEditing = !!slug;
-            const method = isEditing ? 'PATCH' : 'POST';
-            // Assuming your backend uses /project/:id for updates and /project for creation
-            const url = isEditing ? `${apiUrl}/project/${slug}` : `${apiUrl}/project`;
-            
-            console.log("Submitting Project:", { method, url, data: finalData }); // For debugging
-
-            const response = await fetch(url, {
-                method,
-                headers: { 'Content-type': 'application/json' },
-                body: JSON.stringify(finalData),
-                credentials: 'include',
-                cache: "no-store"
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                toast.error(`Operation failed: ${response.status}, ${errorData.message || 'Server error'}`);
-                return;
+            if (isEditing) {
+                await projectService.updateProject(slug as string, finalData);
             }
+            else {
+                await projectService.createProject(finalData);
+            }
+
 
             toast.success(`Project ${isEditing ? 'updated' : 'created'} successfully`);
             form.reset();
-            router.push('/dashboard/project/manage'); 
+            router.push('/dashboard/project/manage');
             onSuccess?.()
 
         } catch (error) {
@@ -116,11 +100,10 @@ const ProjectForm = ({ defaultValues, slug, onSuccess }: ProjectFormProps) => {
     }
 
     const isEditing = !!slug;
-
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                
+
                 {/* Name Field */}
                 <FormField
                     control={form.control}

@@ -1,6 +1,6 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form"; // 🔑 Import SubmitHandler
 // Assuming these are your shadcn/ui components
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./card";
 import { Label } from "./label";
@@ -15,22 +15,27 @@ type LoginFormInputs = {
 const LoginForm = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const redirectTo = searchParams.get('redirect') || '/dashboard'; // Default redirect is /dashboard
-    
-    // Check if the current route is a modal route (e.g., checking for the login path in the URL)
-    // We assume the modal is opened via a parallel route.
+    const redirectTo = searchParams.get('redirect') || '/dashboard';
+
     const isModalOpen = window.location.pathname === '/login' || window.location.pathname.includes('/login');
 
     const {
         register,
         handleSubmit,
+        setError, // 🔑 1. Expose setError function
         formState: { errors, isSubmitting },
     } = useForm<LoginFormInputs>();
 
-    const onSubmit = async (data: LoginFormInputs) => {
+    const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
+        // RHF automatically clears previously set server errors at the start of submission, 
+        // but it's good practice to clear the 'root' error explicitly if necessary.
+        setError("root", { type: 'manual', message: '' });
+
         const apiUrl = process.env.NEXT_PUBLIC_BASE_URL;
         if (!apiUrl) {
             console.error("BASE_URL environment variable is not set.");
+            // 🔑 Set configuration error on the 'root'
+            setError("root", { type: "manual", message: "Configuration Error: API base URL not set." });
             return;
         }
 
@@ -47,32 +52,48 @@ const LoginForm = () => {
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error("Login failed with status:", response.status, errorData);
-                // Optionally show an error message on the form here
+
+                // 🔑 2. Handle API Errors
+                const errorMessage = errorData.message || `Login failed with status: ${response.status}`;
+
+                if (response.status === 401 || response.status === 403) {
+                    // For credential errors, target the specific field (password)
+                    setError('password', {
+                        type: 'server',
+                        message: errorMessage,
+                    });
+                } else {
+                    // For other errors (e.g., 500, other bad requests), target the 'root'
+                    setError("root", {
+                        type: 'server',
+                        message: `Server Error: ${errorMessage}`
+                    });
+                }
                 return;
             }
-            
+
             const result = await response.json();
             console.log("Login successful! Token/User data:", result);
-            
-            // 🚀 SUCCESS LOGIC: CLOSE MODAL AND REDIRECT
+
+            // 🚀 SUCCESS LOGIC
             if (isModalOpen) {
-                // 1. Close the modal (removes the parallel route from the URL)
-                router.back(); 
+                router.back();
             }
-            
-            // Wait briefly for the modal state to clear before navigating
-            // This small delay can help ensure the routing transition is clean.
+
             setTimeout(() => {
-                // 2. Redirect to the intended page (dashboard or specified path)
                 router.push(redirectTo);
-            }, 100); 
+            }, 100);
 
         } catch (error) {
+            // 🔑 3. Handle Network/Fetch Errors on the 'root'
             console.error("Network or Fetch Error:", error);
+            setError("root", {
+                type: 'server',
+                message: "A network error occurred. Check your connection or server status."
+            });
         }
     };
 
-    // ... (Form JSX remains the same)
     return (
         <Card className="w-full max-w-sm">
             <CardHeader>
@@ -84,6 +105,11 @@ const LoginForm = () => {
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <CardContent className="grid gap-4">
+
+                    {/* 🔑 4. Display the RHF Root Error */}
+                   
+
+                    {/* Email Field (remains the same) */}
                     <div className="grid gap-2">
                         <Label htmlFor="email">Email</Label>
                         <Input
@@ -103,6 +129,7 @@ const LoginForm = () => {
                         )}
                     </div>
 
+                    {/* Password Field (remains the same) */}
                     <div className="grid gap-2">
                         <Label htmlFor="password">Password</Label>
                         <Input
@@ -111,11 +138,12 @@ const LoginForm = () => {
                             {...register("password", {
                                 required: "Password is required",
                                 minLength: {
-                                    value: 5, // Changed from 5 to 6 to match message
+                                    value: 5,
                                     message: "Password must be at least 5 characters",
                                 },
                             })}
                         />
+                        {/* This single line now handles RHF validation errors AND server-side credential errors (401/403) */}
                         {errors.password && (
                             <p className="text-sm text-red-500">{errors.password.message}</p>
                         )}
