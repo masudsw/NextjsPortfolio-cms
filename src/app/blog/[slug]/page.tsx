@@ -1,8 +1,7 @@
-// app/blog/[slug]/page.tsx
-
 import Image from 'next/image';
 import { notFound } from 'next/navigation'; 
 import { BlogPost} from '@/types'; 
+import Link from 'next/link';
 
 async function getBlogDetailData(slug: string): Promise<BlogPost> {
     const { blogService } = require('@/service/service');
@@ -34,6 +33,22 @@ export default async function BlogPostDetailPage({ params }: BlogPostDetailPageP
 
     return (
         <article className="container mx-auto max-w-4xl p-4 md:p-8 lg:p-12 bg-white dark:bg-gray-900 min-h-screen">
+            <div className="mb-8 flex space-x-4 text-sm font-medium">
+                <Link 
+                    href="/blog" 
+                    className="flex items-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors"
+                >
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to All Blogs
+                </Link>
+                <span className="text-gray-400">|</span>
+                <Link 
+                    href="/" 
+                    className="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                >
+                    Home
+                </Link>
+            </div>
             <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
                 {post.title}
             </h1>
