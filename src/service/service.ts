@@ -61,5 +61,5 @@ export const blogService = {
     }),
     getLatestPosts: () => apiFetch<ApiResponse<BlogPost>>('post?limit=3'),
     getPostBySlug:(slug:string)=>apiFetch<BlogPost>(`post/${slug}`),
-    getAllPosts:()=>apiFetch<BlogPost[]>('post')
+    getAllPosts:()=>apiFetch<ApiResponse<BlogPost>>('post')
 };

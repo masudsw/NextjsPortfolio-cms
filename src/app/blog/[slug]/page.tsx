@@ -22,7 +22,7 @@ interface BlogPostDetailPageProps {
 }
 
 export default async function BlogPostDetailPage({ params }: BlogPostDetailPageProps) {
-    const { slug } = params;
+    const { slug } =await params;
     const post = await getBlogDetailData(slug); 
     const createdDate = new Date(post.createdAt).toLocaleDateString('en-US', { 
         year: 'numeric', month: 'long', day: 'numeric' 
@@ -33,7 +33,7 @@ export default async function BlogPostDetailPage({ params }: BlogPostDetailPageP
 
     return (
         <article className="container mx-auto max-w-4xl p-4 md:p-8 lg:p-12 bg-white dark:bg-gray-900 min-h-screen">
-            <div className="mb-8 flex space-x-4 text-sm font-medium">
+            <div className="mb-8 flex space-x-4 text-sm font-medium my-8">
                 <Link 
                     href="/blog" 
                     className="flex items-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors"
@@ -70,9 +70,6 @@ export default async function BlogPostDetailPage({ params }: BlogPostDetailPageP
                     priority
                 />
             </div>
-            <div className="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed text-lg">
-                <p>{post.content}</p>
-            </div>
             <div className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">Tags:</h3>
                 <div className="flex flex-wrap gap-2">
@@ -82,6 +79,26 @@ export default async function BlogPostDetailPage({ params }: BlogPostDetailPageP
                         </span>
                     ))}
                 </div>
+            </div>
+            <div className="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed text-lg my-8">
+                <p>{post.content}</p>
+            </div>
+            
+            <div className="mb-8 flex space-x-4 text-sm font-medium my-8">
+                <Link 
+                    href="/blog" 
+                    className="flex items-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors"
+                >
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to All Blogs
+                </Link>
+                <span className="text-gray-400">|</span>
+                <Link 
+                    href="/" 
+                    className="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                >
+                    Home
+                </Link>
             </div>
 
         </article>
